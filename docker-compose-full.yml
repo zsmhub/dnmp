@@ -211,7 +211,7 @@ services:
 
   elasticsearch:
     build:
-      context: .
+      context: ./services/elasticsearch
       args:
         ELASTICSEARCH_VERSION: ${ELASTICSEARCH_VERSION}
     environment:
