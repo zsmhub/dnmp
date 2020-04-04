@@ -294,7 +294,7 @@ services:
             - "${GOLANG_HTTP_HOST_PORT}:${GOLANG_HTTP_HOST_PORT}"
             # - "${GOLANG_HTTPS_HOST_PORT}:443"
         volumes:
-            - $HOME/code/go:/go
+            - $HOME/go:/go
         restart: always
         cap_add:
             - SYS_PTRACE

@@ -5,5 +5,6 @@ FROM ${GOLANG_VERSION}
 
 # 启用 GO111MODULE
 RUN go env -w GO111MODULE=on
+RUN go env -w GOPROXY=https://goproxy.cn,direct
 
 WORKDIR $GOPATH
