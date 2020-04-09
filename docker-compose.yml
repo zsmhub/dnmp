@@ -10,7 +10,7 @@ services:
         container_name: nginx
         ports:
             - "${NGINX_HTTP_HOST_PORT}:80"
-            - "${NGINX_HTTPS_HOST_PORT}:443"
+            # - "${NGINX_HTTPS_HOST_PORT}:443"
         volumes:
             - ${SOURCE_DIR}:/www/:rw
             - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
@@ -292,7 +292,7 @@ services:
         container_name: golang
         ports:
             - "${GOLANG_HTTP_HOST_PORT}:${GOLANG_HTTP_HOST_PORT}"
-            # - "${GOLANG_HTTPS_HOST_PORT}:443"
+            - "${GOLANG_HTTPS_HOST_PORT}:${GOLANG_HTTPS_HOST_PORT}"
         volumes:
             - $HOME/go:/go
         restart: always
