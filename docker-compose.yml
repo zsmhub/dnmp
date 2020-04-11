@@ -293,6 +293,7 @@ services:
         ports:
             - "${GOLANG_HTTP_HOST_PORT}:${GOLANG_HTTP_HOST_PORT}"
             - "${GOLANG_HTTPS_HOST_PORT}:${GOLANG_HTTPS_HOST_PORT}"
+            - "${GOLANG_ADMIN_HOST_PORT}:${GOLANG_ADMIN_HOST_PORT}"
         volumes:
             - $HOME/go:/go
         restart: always
