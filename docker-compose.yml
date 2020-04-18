@@ -284,24 +284,24 @@ services:
     #      - "${LOGSTASH_HOST_PORT_C}:9600"
     #      - "${LOGSTASH_HOST_PORT_S}:5044"
 
-    golang:
-        build:
-            context: ./services/golang
-            args:
-                GOLANG_VERSION: golang:${GOLANG_VERSION}
-        container_name: golang
-        ports:
-            - "${GOLANG_HTTP_HOST_PORT}:${GOLANG_HTTP_HOST_PORT}"
-            - "${GOLANG_HTTPS_HOST_PORT}:${GOLANG_HTTPS_HOST_PORT}"
-            - "${GOLANG_ADMIN_HOST_PORT}:${GOLANG_ADMIN_HOST_PORT}"
-        volumes:
-            - $HOME/go:/go
-        restart: always
-        cap_add:
-            - SYS_PTRACE
-        networks:
-            - default
-        tty: true
+    # golang:
+    #     build:
+    #         context: ./services/golang
+    #         args:
+    #             GOLANG_VERSION: golang:${GOLANG_VERSION}
+    #     container_name: golang
+    #     ports:
+    #         - "${GOLANG_HTTP_HOST_PORT}:${GOLANG_HTTP_HOST_PORT}"
+    #         - "${GOLANG_HTTPS_HOST_PORT}:${GOLANG_HTTPS_HOST_PORT}"
+    #         - "${GOLANG_ADMIN_HOST_PORT}:${GOLANG_ADMIN_HOST_PORT}"
+    #     volumes:
+    #         - $HOME/go:/go
+    #     restart: always
+    #     cap_add:
+    #         - SYS_PTRACE
+    #     networks:
+    #         - default
+    #     tty: true
 
 networks:
     default:
