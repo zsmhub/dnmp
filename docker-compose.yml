@@ -163,8 +163,10 @@ services:
         container_name: memcached
         ports:
             - "${MEMCACHED_HOST_PORT}:11211"
+        restart: always
         environment:
             MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
+            TZ: "$TZ"
         networks:
             - default
 
