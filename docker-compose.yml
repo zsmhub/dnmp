@@ -347,5 +347,78 @@ services:
         networks:
             - default
 
+    etcd1: # 服务发现 etcd
+        image: "quay.io/coreos/etcd:v3.4.7"
+        entrypoint: /usr/local/bin/etcd
+        container_name: etcd1
+        command:
+            - '--name=etcd1'
+            - '--data-dir=/etcd_data'
+            - '--initial-advertise-peer-urls=http://etcd1:2380' # 通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
+            - '--listen-peer-urls=http://0.0.0.0:2380'
+            - '--listen-client-urls=http://0.0.0.0:2379'
+            - '--advertise-client-urls=http://0.0.0.0:23791' # 解决 rpc error: code = DeadlineExceeded desc = latest balancer error: all SubConns are in TransientFailure, latest connection error: connection error: desc = \"transport: Error while dialing dial tcp 127.0.0.1:2379: connect: connection refused
+            - '--initial-cluster-token=mys1cr2tt1k7n'
+            - '--heartbeat-interval=250'
+            - '--election-timeout=1250'
+            - '--initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380'
+            - '--initial-cluster-state=new'
+        #      - '--enable-pprof=true'
+        ports:
+            - 23791:2379
+            - 23801:2380
+        environment:
+            TZ: "$TZ"
+        networks:
+            - default
+
+    etcd2:
+        image: "quay.io/coreos/etcd:v3.4.7"
+        entrypoint: /usr/local/bin/etcd
+        container_name: etcd2
+        command:
+            - '--name=etcd2'
+            - '--data-dir=/etcd_data'
+            - '--initial-advertise-peer-urls=http://etcd2:2380' #通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
+            - '--listen-peer-urls=http://0.0.0.0:2380'
+            - '--listen-client-urls=http://0.0.0.0:2379'
+            - '--advertise-client-urls=http://0.0.0.0:23792'
+            - '--initial-cluster-token=mys1cr2tt1k7n'
+            - '--heartbeat-interval=250'
+            - '--election-timeout=1250'
+            - '--initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380'
+            - '--initial-cluster-state=new'
+        ports:
+            - 23792:2379
+            - 23802:2380
+        environment:
+            TZ: "$TZ"
+        networks:
+            - default
+
+    etcd3:
+        image: "quay.io/coreos/etcd:v3.4.7"
+        entrypoint: /usr/local/bin/etcd
+        container_name: etcd3
+        command:
+            - '--name=etcd3'
+            - '--data-dir=/etcd_data'
+            - '--initial-advertise-peer-urls=http://etcd3:2380' #通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
+            - '--listen-peer-urls=http://0.0.0.0:2380'
+            - '--listen-client-urls=http://0.0.0.0:2379'
+            - '--advertise-client-urls=http://0.0.0.0:23793'
+            - '--initial-cluster-token=mys1cr2tt1k7n'
+            - '--heartbeat-interval=250'
+            - '--election-timeout=1250'
+            - '--initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380'
+            - '--initial-cluster-state=new'
+        ports:
+            - 23793:2379
+            - 23803:2380
+        environment:
+            TZ: "$TZ"
+        networks:
+            - default
+
 networks:
     default:
