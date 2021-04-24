@@ -367,6 +367,7 @@ services:
         ports:
             - 23791:2379
             - 23801:2380
+        restart: always
         environment:
             TZ: "$TZ"
         networks:
@@ -391,6 +392,7 @@ services:
         ports:
             - 23792:2379
             - 23802:2380
+        restart: always
         environment:
             TZ: "$TZ"
         networks:
@@ -415,6 +417,7 @@ services:
         ports:
             - 23793:2379
             - 23803:2380
+        restart: always
         environment:
             TZ: "$TZ"
         networks:
