@@ -380,7 +380,7 @@ services:
         command:
             - '--name=etcd2'
             - '--data-dir=/etcd_data'
-            - '--initial-advertise-peer-urls=http://etcd2:2380' #通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
+            - '--initial-advertise-peer-urls=http://etcd2:2380' # 通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
             - '--listen-peer-urls=http://0.0.0.0:2380'
             - '--listen-client-urls=http://0.0.0.0:2379'
             - '--advertise-client-urls=http://0.0.0.0:23792'
@@ -405,7 +405,7 @@ services:
         command:
             - '--name=etcd3'
             - '--data-dir=/etcd_data'
-            - '--initial-advertise-peer-urls=http://etcd3:2380' #通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
+            - '--initial-advertise-peer-urls=http://etcd3:2380' # 通知其他节点与本节点进行数据交换的地址，URL可以使用domain地址
             - '--listen-peer-urls=http://0.0.0.0:2380'
             - '--listen-client-urls=http://0.0.0.0:2379'
             - '--advertise-client-urls=http://0.0.0.0:23793'
