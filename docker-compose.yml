@@ -57,7 +57,7 @@ services:
     #             PHP_VERSION: php:${PHP74_VERSION}-fpm-alpine
     #             CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
     #             PHP_EXTENSIONS: ${PHP_EXTENSIONS}
-    #             TZ: "$TZ"
+    #             TZ: "$TZ"`
     #     container_name: php74
     #     expose:
     #         - 9501
