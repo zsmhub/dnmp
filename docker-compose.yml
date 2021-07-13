@@ -57,7 +57,7 @@ services:
                 PHP_VERSION: php:${PHP74_VERSION}-fpm-alpine
                 CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
                 PHP_EXTENSIONS: ${PHP_EXTENSIONS}
-                TZ: "$TZ"`
+                TZ: "$TZ"
         container_name: php74
         expose:
             - 9501
@@ -373,7 +373,7 @@ services:
             - default
 
     etcd1: # 服务发现 etcd
-        image: "quay.io/coreos/etcd:v3.4.7"
+        image: "quay.io/coreos/etcd:v3.4.13"
         entrypoint: /usr/local/bin/etcd
         container_name: etcd1
         command:
@@ -399,7 +399,7 @@ services:
             - default
 
     etcd2:
-        image: "quay.io/coreos/etcd:v3.4.7"
+        image: "quay.io/coreos/etcd:v3.4.13"
         entrypoint: /usr/local/bin/etcd
         container_name: etcd2
         command:
@@ -424,7 +424,7 @@ services:
             - default
 
     etcd3:
-        image: "quay.io/coreos/etcd:v3.4.7"
+        image: "quay.io/coreos/etcd:v3.4.13"
         entrypoint: /usr/local/bin/etcd
         container_name: etcd3
         command:
