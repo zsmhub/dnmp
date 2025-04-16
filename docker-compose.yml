@@ -1,0 +1,211 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: ./services/nginx
+      args:
+        NGINX_VERSION: 'nginx:${NGINX_VERSION}'
+        CONTAINER_PACKAGE_URL: '${CONTAINER_PACKAGE_URL}'
+        NGINX_INSTALL_APPS: '${NGINX_INSTALL_APPS}'
+    container_name: nginx
+    ports:
+      - '${NGINX_HTTP_HOST_PORT}:80'
+      - '${NGINX_HTTPS_HOST_PORT}:443'
+    volumes:
+      - '${SOURCE_DIR}:/www/:rw'
+      - '${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw'
+      - '${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw'
+      - '${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro'
+      - '${NGINX_FASTCGI_PHP_CONF}:/etc/nginx/fastcgi-php.conf:ro'
+      - '${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcgi_params:ro'
+      - '${NGINX_LOG_DIR}:/var/log/nginx/:rw'
+    environment:
+      TZ: $TZ
+    restart: always
+    networks:
+      - default
+  php:
+    build:
+      context: ./services/php
+      args:
+        PHP_VERSION: 'php:${PHP_VERSION}-fpm-alpine'
+        CONTAINER_PACKAGE_URL: '${CONTAINER_PACKAGE_URL}'
+        COMPOSER_URL: '${COMPOSER_URL}'
+        PHP_EXTENSIONS: '${PHP_EXTENSIONS}'
+        TZ: $TZ
+    container_name: php
+    expose:
+      - 9501
+    extra_hosts:
+      - 'www.site1.com:172.17.0.1'
+    volumes:
+      - '${SOURCE_DIR}:/www/:rw'
+      - '${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro'
+      - '${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw'
+      - '${PHP_LOG_DIR}:/var/log/php'
+      - '${DATA_DIR}/composer:/tmp/composer'
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+  mysql:
+    image: 'mysql:${MYSQL_VERSION}'
+    container_name: mysql
+    ports:
+      - '${MYSQL_HOST_PORT}:3306'
+    volumes:
+      - '${MYSQL_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro'
+      - '${DATA_DIR}/mysql:/var/lib/mysql/:rw'
+      - '${MYSQL_LOG_DIR}:/var/log/mysql/:rw'
+    restart: always
+    networks:
+      - default
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_ROOT_HOST: '${MYSQL_ROOT_HOST}'
+      TZ: $TZ
+  redis:
+    image: 'redis:${REDIS_VERSION}'
+    container_name: redis
+    ports:
+      - '${REDIS_HOST_PORT}:6379'
+    volumes:
+      - '${REDIS_CONF_FILE}:/etc/redis.conf:ro'
+      - '${DATA_DIR}/redis:/data/:rw'
+    restart: always
+    entrypoint:
+      - redis-server
+      - /etc/redis.conf
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  memcached:
+    image: 'memcached:${MEMCACHED_VERSION}'
+    container_name: memcached
+    ports:
+      - '${MEMCACHED_HOST_PORT}:11211'
+    environment:
+      MEMCACHED_CACHE_SIZE: '${MEMCACHED_CACHE_SIZE}'
+    networks:
+      - default
+  nsqlookupd:
+    image: nsqio/nsq
+    container_name: nsqlookupd
+    command: /nsqlookupd
+    ports:
+      - '4160:4160'
+      - '4161:4161'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  nsqd:
+    image: nsqio/nsq
+    container_name: nsqd
+    command: '/nsqd --lookupd-tcp-address=nsqlookupd:4160'
+    depends_on:
+      - nsqlookupd
+    ports:
+      - '4150:4150'
+      - '4151:4151'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  nsqadmin:
+    image: nsqio/nsq
+    container_name: nsqadmin
+    command: '/nsqadmin --lookupd-http-address=nsqlookupd:4161'
+    depends_on:
+      - nsqlookupd
+    ports:
+      - '4171:4171'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  etcd1:
+    image: 'quay.io/coreos/etcd:v3.4.13'
+    entrypoint: /usr/local/bin/etcd
+    container_name: etcd1
+    command:
+      - '--name=etcd1'
+      - '--data-dir=/etcd_data'
+      - '--initial-advertise-peer-urls=http://etcd1:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://0.0.0.0:23791'
+      - '--initial-cluster-token=mys1cr2tt1k7n'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - >-
+        --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - '--initial-cluster-state=new'
+    ports:
+      - '23791:2379'
+      - '23801:2380'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  etcd2:
+    image: 'quay.io/coreos/etcd:v3.4.13'
+    entrypoint: /usr/local/bin/etcd
+    container_name: etcd2
+    command:
+      - '--name=etcd2'
+      - '--data-dir=/etcd_data'
+      - '--initial-advertise-peer-urls=http://etcd2:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://0.0.0.0:23792'
+      - '--initial-cluster-token=mys1cr2tt1k7n'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - >-
+        --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - '--initial-cluster-state=new'
+    ports:
+      - '23792:2379'
+      - '23802:2380'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+  etcd3:
+    image: 'quay.io/coreos/etcd:v3.4.13'
+    entrypoint: /usr/local/bin/etcd
+    container_name: etcd3
+    command:
+      - '--name=etcd3'
+      - '--data-dir=/etcd_data'
+      - '--initial-advertise-peer-urls=http://etcd3:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://0.0.0.0:23793'
+      - '--initial-cluster-token=mys1cr2tt1k7n'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - >-
+        --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - '--initial-cluster-state=new'
+    ports:
+      - '23793:2379'
+      - '23803:2380'
+    restart: always
+    environment:
+      TZ: $TZ
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
